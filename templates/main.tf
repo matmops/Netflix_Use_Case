@@ -14,3 +14,9 @@ resource "azurerm_servicebus_queue" "servicebus_queue" {
   name         = var.service_bus_queue_name
   namespace_id = azurerm_servicebus_namespace.servicebus_namespace.id
 }
+
+resource "azurerm_user_assigned_identity" "user_assigned_identity" {
+  name                = "IdentityForVmToRightAndRead"
+  resource_group_name = azurerm_resource_group.resource_group.name
+  location            = azurerm_resource_group.resource_group.location
+}
