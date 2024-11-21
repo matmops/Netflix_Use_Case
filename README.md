@@ -19,10 +19,10 @@ This project focuses on various Azure services to handle events, storage, and pr
 - New logic app (Terraform)
 - Python subprocess for AVI file processing
 
-## To Do
-- Complete the Terraform setup by Thursday
-- Create a reception container
-- Create a pricing model for the solution
+## To Do for 28
+- Docker Skillup
+- Image docker avec les dependenses
+- Script processing
 
 ## Nice to Have (NtH)
 - Scalability
@@ -32,3 +32,5 @@ This project focuses on various Azure services to handle events, storage, and pr
 
 ## Progress
 - meeting 14 November ( a restructuring of the project with David & Mathéo & Salah )
+
+
