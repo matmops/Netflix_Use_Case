@@ -42,3 +42,14 @@ resource "azurerm_eventgrid_event_subscription" "event_subscription" {
     event_time_to_live    = 1440
   }
 }
+resource "azurerm_role_assignment" "read_raw_container" {
+  principal_id        = azurerm_user_assigned_identity.user_assigned_identity.principal_id
+  role_definition_name = "Storage Blob Data Reader"
+  scope               = azurerm_storage_container.container_raw.resource_manager_id
+}
+
+resource "azurerm_role_assignment" "write_final_container" {
+  principal_id        = azurerm_user_assigned_identity.user_assigned_identity.principal_id
+  role_definition_name = "Storage Blob Data Contributor"
+  scope               = azurerm_storage_container.container_final.resource_manager_id
+}
