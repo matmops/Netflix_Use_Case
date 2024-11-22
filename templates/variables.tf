@@ -13,11 +13,6 @@ variable "event_grid_topic_name" {
   default = "UploadEvent"
 }
 
-variable "storage_account_id" {
-  type    = string
-  default = "/subscriptions/1d874ea7-d53d-4cef-9987-572bff2963ba/resourceGroups/rg-netflix-usecase/providers/Microsoft.Storage/StorageAccounts/container_raw"
-}
-
 variable "service_bus_namespace_name" {
   type    = string
   default = "NetflixServiceBusNamespace"
@@ -26,4 +21,14 @@ variable "service_bus_namespace_name" {
 variable "service_bus_queue_name" {
   type    = string
   default = "netflixbusqueue"
+}
+
+variable "subscription_id" {
+  type    = string
+  default = "1d874ea7-d53d-4cef-9987-572bff2963ba"
+}
+
+variable "tenant_id" {
+  type    = string
+  default = "d7c4eaa4-f23f-4da8-ac82-79a2732c514f"
 }

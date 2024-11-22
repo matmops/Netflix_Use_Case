@@ -19,6 +19,6 @@ provider "azurerm" {
     }
   }
   skip_provider_registration = false
-  subscription_id = "1d874ea7-d53d-4cef-9987-572bff2963ba"
-  tenant_id       = "d7c4eaa4-f23f-4da8-ac82-79a2732c514f"
+  subscription_id = var.subscription_id
+  tenant_id       = var.tenant_id
 }
