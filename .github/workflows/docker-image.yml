@@ -25,5 +25,5 @@ jobs:
         with:
           context: ./Docker
           file: ./Docker/Dockerfile
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/matmops/netflix_use_case:lates
           push: true
