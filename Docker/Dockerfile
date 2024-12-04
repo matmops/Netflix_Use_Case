@@ -8,7 +8,7 @@ WORKDIR /app
 RUN apt-get update && \
   apt-get install -y curl ffmpeg && \
   curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
-  pip install azure-identity azure-storage-blob
+  pip install azure-identity azure-storage-blob azure-servicebus
 
   
 RUN az login --identity
