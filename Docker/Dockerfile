@@ -6,10 +6,12 @@ WORKDIR /app
 
 # Installer Azure CLI et la bibliothèque azure-identity
 RUN apt-get update && \
-  apt-get install -y curl && \
+  apt-get install -y curl ffmpeg && \
   curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
   pip install azure-identity azure-storage-blob
 
+  
+RUN az login --identity
 # Copier le contenu local dans le conteneur
 COPY . /app
 
