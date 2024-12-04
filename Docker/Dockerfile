@@ -10,10 +10,10 @@ RUN apt-get update && \
   curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
   pip install azure-identity azure-storage-blob azure-servicebus
 
-  
-RUN az login --identity
+
 # Copier le contenu local dans le conteneur
 COPY . /app
 
 # Commande par défaut pour garder le conteneur en cours d'exécution
 CMD ["tail", "-f", "/dev/null"]
+CMD az login --identity
