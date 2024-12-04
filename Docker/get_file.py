@@ -2,8 +2,8 @@ from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
 
 # Remplacez par l'URL de votre compte de stockage
-account_url = "https://inputcontainerfornetflix.blob.core.windows.net"
-container_name = "test"
+account_url = "https://netflixsa194.blob.core.windows.net/"
+container_name = "raw"
 
 # Authentification avec l'identité assignée
 credential = DefaultAzureCredential()
