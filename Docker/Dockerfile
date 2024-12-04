@@ -16,4 +16,4 @@ COPY . /app
 
 # Commande par défaut pour garder le conteneur en cours d'exécution
 CMD ["tail", "-f", "/dev/null"]
-CMD az login --identity
+
