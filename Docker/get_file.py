@@ -1,5 +1,8 @@
+import subprocess
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
+
+subprocess.run(["az", "login", "--identity"], check=True)
 
 # Remplacez par l'URL de votre compte de stockage
 account_url = "https://netflixsa194.blob.core.windows.net/"
