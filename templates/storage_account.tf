@@ -31,7 +31,7 @@ resource "azurerm_eventgrid_system_topic" "event_grid_topic" {
   topic_type          = "Microsoft.Storage.StorageAccounts"
 }
 
-resource "azurerm_eventgrid_event_subscription" "event_subscription" {
+resource "azurerm_eventgrid_event_subscription" "event_subscription_servicebus" {
   name                = "UploadEvent"
   scope               = azurerm_storage_account.storageaccount.id
   service_bus_queue_endpoint_id = azurerm_servicebus_queue.servicebus_queue.id
@@ -42,6 +42,17 @@ resource "azurerm_eventgrid_event_subscription" "event_subscription" {
     event_time_to_live    = 1440
   }
 }
+resource "azurerm_eventgrid_event_subscription" "event_subscription_queue" {
+  name                = "UploadEventQueue"
+  scope               = azurerm_storage_account.storageaccount.id
+  storage_queue_endpoint {
+    storage_account_id = azurerm_storage_account.storageaccount.id
+    queue_name         = azurerm_storage_queue.my_queue_for_the_aca_app.name
+  }
+  included_event_types = ["Microsoft.Storage.BlobCreated"]
+  event_delivery_schema = "EventGridSchema"
+}
+
 resource "azurerm_role_assignment" "read_raw_container" {
   principal_id        = azurerm_user_assigned_identity.user_assigned_identity.principal_id
   role_definition_name = "Storage Blob Data Reader"
@@ -53,3 +64,10 @@ resource "azurerm_role_assignment" "write_final_container" {
   role_definition_name = "Storage Blob Data Contributor"
   scope               = azurerm_storage_container.container_final.resource_manager_id
 }
+
+resource "azurerm_storage_queue" "my_queue_for_the_aca_app" {
+  name                 = "aca-app-trigger"
+  storage_account_name = azurerm_storage_account.storageaccount.name
+  
+}
+
