@@ -9,6 +9,7 @@ resource "azurerm_storage_account" "storageaccount" {
   location                 = azurerm_resource_group.resource_group.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+  shared_access_key_enabled = true
 }
 
 resource "azurerm_storage_container" "container_raw" {
