@@ -32,20 +32,27 @@ resource "azurerm_container_app" "aca_netflix_use_case" {
   template {
 
       min_replicas = 0
-      max_replicas = 10
+      max_replicas = 20
 
 
 
-/*    azure_queue_scale_rule {
+    custom_scale_rule {
+      custom_rule_type = "azure-queue"
         name         = "queue-scaling-rule"
-        queue_name   = azurerm_storage_queue.my_queue_for_the_aca_app.name
-        queue_length = 1
+ 
+
+        metadata = {
+          accountName = azurerm_storage_account.storageaccount.name
+          queueName   = azurerm_storage_queue.my_queue_for_the_aca_app.name
+          queueLength = "1"
+          connectionFromEnv = "queue-connection-string"
+        }
 
         authentication {
           secret_name = "queue-connection-string"
-          trigger_parameter = "goscale"
+          trigger_parameter = "connection"
         }
-      } */
+      } 
     container {
       name   = "my-job-to-process-netflix"
       image  = "ghcr.io/matmops/netflix_use_case:latest"
@@ -73,9 +80,9 @@ resource "azurerm_container_app" "aca_netflix_use_case" {
     
     }
   }
-
-resource "azurerm_role_assignment" "queue_role_assignment" {
+ resource "azurerm_role_assignment" "queue_role_assignment" {
   principal_id         = azurerm_user_assigned_identity.user_assigned_identity.client_id
   role_definition_name = "Storage Queue Data Contributor"
-  scope                = azurerm_storage_container.container_final.resource_manager_id
+  scope                = azurerm_storage_queue.my_queue_for_the_aca_app.resource_manager_id
 }
+ 

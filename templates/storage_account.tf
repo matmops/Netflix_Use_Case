@@ -72,3 +72,4 @@ resource "azurerm_storage_queue" "my_queue_for_the_aca_app" {
   
 }
 
+
