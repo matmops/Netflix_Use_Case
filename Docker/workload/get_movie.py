@@ -14,8 +14,10 @@ account_name = blob_url_parts[2].split('.')[0]
 container_name = blob_url_parts[3]
 blob_name = '/'.join(blob_url_parts[4:])
 
+client_id = os.getenv('AZURE_AZURE_CLIENT_ID')
+
 # Authentification avec l'identité assignée
-credential = DefaultAzureCredential()
+credential = DefaultAzureCredential(managed_identity_client_id=client_id)
 blob_service_client = BlobServiceClient(account_url=f"https://{account_name}.blob.core.windows.net", credential=credential)
 
 # Récupérer le client du conteneur et du blob

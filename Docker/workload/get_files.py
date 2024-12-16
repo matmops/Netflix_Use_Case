@@ -1,14 +1,17 @@
 import json
+import os
 import configparser
 from azure.identity import DefaultAzureCredential
 from azure.servicebus import ServiceBusClient
 
-# Remplacez par votre connexion à la chaîne de connexion Service Bus et le nom de la file d'attente
-fully_qualified_namespace = 'NetflixServiceBusNamespace.servicebus.windows.net'
-queue_name = 'netflixbusqueue'
+
+fully_qualified_namespace = os.getenv('AZURE_SERVICEBUS_NAME_SPACE') + '.servicebus.windows.net'
+queue_name = os.getenv('AZURE_SERVICEBUS_QUEUE_NAME')
+
+client_id = os.getenv('AZURE_AZURE_CLIENT_ID')
 
 # Authentification avec l'identité assignée
-credential = DefaultAzureCredential()
+credential = DefaultAzureCredential(managed_identity_client_id=client_id)
 servicebus_client = ServiceBusClient(fully_qualified_namespace=fully_qualified_namespace, credential=credential, logging_enable=True)
 
 def process_message_with_lock_renewal():

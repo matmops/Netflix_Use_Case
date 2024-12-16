@@ -20,8 +20,13 @@ if check_status == "DONE":
     blob_name = '/'.join(blob_url_parts[4:])
     file_name = os.path.basename(blob_name)
 
-    # Authentification avec l'identité assignée
-    credential = DefaultAzureCredential()
+    client_id = os.getenv('AZURE_AZURE_CLIENT_ID')
+
+
+    account_name = client_id = os.getenv('AZURE_BLOB_WRITE')
+
+# Authentification avec l'identité assignée
+    credential = DefaultAzureCredential(managed_identity_client_id=client_id)
     blob_service_client = BlobServiceClient(account_url=f"https://{account_name}.blob.core.windows.net", credential=credential)
 
     # Récupérer le client du conteneur et du blob
@@ -41,9 +46,8 @@ if check_status == "DONE":
     original_blob_client.delete_blob()
     print(f"Fichier {blob_name} supprimé du blob.")
 
-    # Compléter le message dans la file d'attente
-    fully_qualified_namespace = 'NetflixServiceBusNamespace.servicebus.windows.net'
-    queue_name = 'netflixbusqueue'
+    fully_qualified_namespace = os.getenv('AZURE_SERVICEBUS_NAME_SPACE') + '.servicebus.windows.net'
+    queue_name = os.getenv('AZURE_SERVICEBUS_QUEUE_NAME')
     servicebus_client = ServiceBusClient(fully_qualified_namespace=fully_qualified_namespace, credential=credential, logging_enable=True)
     receiver = servicebus_client.get_queue_receiver(queue_name=queue_name, max_wait_time=5)
     with receiver:

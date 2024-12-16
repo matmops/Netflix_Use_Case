@@ -1,6 +1,7 @@
 import configparser
 from azure.identity import DefaultAzureCredential
 from azure.servicebus import ServiceBusClient
+import os
 
 # Lire le fichier info.ini pour obtenir le statut du check, l'URL et l'ID du message
 config = configparser.ConfigParser()
@@ -13,8 +14,8 @@ print(message_id)
 credential = DefaultAzureCredential()
 
     # Compléter le message dans la file d'attente
-fully_qualified_namespace = 'NetflixServiceBusNamespace.servicebus.windows.net'
-queue_name = 'netflixbusqueue'
+fully_qualified_namespace = os.getenv('AZURE_SERVICEBUS_NAME_SPACE') + '.servicebus.windows.net'
+queue_name = os.getenv('AZURE_SERVICEBUS_QUEUE_NAME')
 servicebus_client = ServiceBusClient(fully_qualified_namespace=fully_qualified_namespace, credential=credential, logging_enable=True)
 
 with servicebus_client:

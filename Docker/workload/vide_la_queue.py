@@ -1,9 +1,9 @@
 from azure.identity import DefaultAzureCredential
 from azure.servicebus import ServiceBusClient
+import os
 
-# Remplacez par votre connexion à la chaîne de connexion Service Bus et le nom de la file d'attente
-fully_qualified_namespace = 'NetflixServiceBusNamespace.servicebus.windows.net'
-queue_name = 'netflixbusqueue'
+fully_qualified_namespace = os.getenv('AZURE_SERVICEBUS_NAME_SPACE') + '.servicebus.windows.net'
+queue_name = os.getenv('AZURE_SERVICEBUS_QUEUE_NAME')
 
 # Authentification avec l'identité assignée
 credential = DefaultAzureCredential()

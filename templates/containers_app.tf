@@ -21,7 +21,7 @@ resource "azurerm_container_app" "aca_netflix_use_case" {
 
   secret {
     name = "queue-connection-string"
-    value = azurerm_storage_account.storageaccount.primary_access_key
+    value = "DefaultEndpointsProtocol=https;AccountName=${azurerm_storage_account.storageaccount.name};AccountKey=${azurerm_storage_account.storageaccount.primary_access_key};EndpointSuffix=core.windows.net"
   }
 
   identity {
@@ -33,6 +33,18 @@ resource "azurerm_container_app" "aca_netflix_use_case" {
 
       min_replicas = 0
       max_replicas = 20
+
+      
+        azure_queue_scale_rule{
+          name = "myscalingrule"
+          queue_length = 1
+          queue_name =  azurerm_storage_queue.my_queue_for_the_aca_app.name
+          authentication {
+            secret_name = "queue-connection-string"
+            trigger_parameter = "connection"
+          }
+        }
+      
       
     container {
       name   = "my-job-to-process-netflix"
@@ -48,12 +60,33 @@ resource "azurerm_container_app" "aca_netflix_use_case" {
         name  = "AZURE_STORAGE_QUEUE_NAME"
         value = azurerm_storage_queue.my_queue_for_the_aca_app.name
       }
-      
-      env {
-        name  = "AZURE_STORAGE_CONNECTION_STRING"
-        value = "DefaultEndpointsProtocol=https;AccountName=${azurerm_storage_account.storageaccount.name};AccountKey=${azurerm_storage_account.storageaccount.primary_access_key};EndpointSuffix=core.windows.net"
+        env {
+        name  = "AZURE_SERVICEBUS_NAME_SPACE"
+        value = azurerm_servicebus_queue.servicebus_queue.name
       }
 
+        env {
+        name  = "AZURE_SERVICEBUS_QUEUE_NAME"
+        value = azurerm_servicebus_queue.servicebus_queue.name
+      }
+
+        env {
+        name  = "AZURE_STORAGE_ACCOUNT_NAME"
+        value = azurerm_storage_account.storageaccount.name
+      }
+
+              env {
+        name  = "AZURE_BLOB_READ"
+        value = azurerm_storage_container.container_raw.name
+      }
+              env {
+        name  = "AZURE_BLOB_WRITE"
+        value = azurerm_storage_container.container_final.name
+      }
+
+      
+      
+
 
     }
 
@@ -63,22 +96,3 @@ resource "azurerm_container_app" "aca_netflix_use_case" {
   }
 
 
-resource "null_resource" "update_scale_rule" {
-  provisioner "local-exec" {
-    command = <<EOT
-      az extension add --name containerapp --upgrade
-      az containerapp update  --name ${azurerm_container_app.aca_netflix_use_case.name} --resource-group ${azurerm_resource_group.resource_group.name}  --scale-rule-name go-ahead --scale-rule-type azure-queue  --scale-rule-metadata accountName=${azurerm_storage_account.storageaccount.name} queueName=${azurerm_storage_queue.my_queue_for_the_aca_app.name} queueLength=1 --scale-rule-auth triggerParameter=connection secretRef=queue-connection-string  --scale-rule-identity ${azurerm_user_assigned_identity.user_assigned_identity.id}
-    EOT
-  }
-
-    depends_on = [
-    azurerm_container_app.aca_netflix_use_case,
-    azurerm_storage_account.storageaccount,
-    azurerm_storage_queue.my_queue_for_the_aca_app,
-    azurerm_user_assigned_identity.user_assigned_identity,
-    azurerm_servicebus_queue.servicebus_queue,
-    azurerm_eventgrid_event_subscription.event_subscription_servicebus,
-    azurerm_role_assignment.queue_role,
-    
-  ]
-}
