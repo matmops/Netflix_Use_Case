@@ -21,7 +21,7 @@ resource "azurerm_container_app" "aca_netflix_use_case" {
 
   secret {
     name = "queue-connection-string"
-    value = "DefaultEndpointsProtocol=https;AccountName=${azurerm_storage_account.storageaccount.name};AccountKey=${azurerm_storage_account.storageaccount.primary_access_key};EndpointSuffix=core.windows.net"
+    value = azurerm_servicebus_namespace_authorization_rule.queue_listener.primary_connection_string
   }
 
   identity {
@@ -29,23 +29,29 @@ resource "azurerm_container_app" "aca_netflix_use_case" {
     identity_ids = [azurerm_user_assigned_identity.user_assigned_identity.id]
   }
 
+  
+
   template {
 
       min_replicas = 0
       max_replicas = 20
+  
+custom_scale_rule{
+  name = "go-ahead"
+  custom_rule_type = "azure-servicebus"
+  metadata = {
+    namespace = azurerm_servicebus_namespace.servicebus_namespace.name
+    queueName = azurerm_servicebus_queue.servicebus_queue.name
+    messageCount = 1
+  }
+  authentication {
+    trigger_parameter = "connection"
+    secret_name = "queue-connection-string"
+  }
+}
 
       
-        azure_queue_scale_rule{
-          name = "myscalingrule"
-          queue_length = 1
-          queue_name =  azurerm_storage_queue.my_queue_for_the_aca_app.name
-          authentication {
-            secret_name = "queue-connection-string"
-            trigger_parameter = "connection"
-          }
-        }
-      
-      
+    
     container {
       name   = "my-job-to-process-netflix"
       image  = "ghcr.io/matmops/netflix_use_case:latest"
@@ -56,10 +62,7 @@ resource "azurerm_container_app" "aca_netflix_use_case" {
         name  = "AZURE_CLIENT_ID"
         value = azurerm_user_assigned_identity.user_assigned_identity.client_id
       }
-        env {
-        name  = "AZURE_STORAGE_QUEUE_NAME"
-        value = azurerm_storage_queue.my_queue_for_the_aca_app.name
-      }
+
         env {
         name  = "AZURE_SERVICEBUS_NAME_SPACE"
         value = azurerm_servicebus_namespace.servicebus_namespace.name

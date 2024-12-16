@@ -9,3 +9,19 @@ resource "azurerm_servicebus_queue" "servicebus_queue" {
   name         = var.service_bus_queue_name
   namespace_id = azurerm_servicebus_namespace.servicebus_namespace.id
 }
+resource "azurerm_servicebus_namespace_authorization_rule" "queue_listener" {
+  name                = "listener-policy"
+  namespace_id     = azurerm_servicebus_namespace.servicebus_namespace.id
+
+  listen              = true
+  send                = true
+  manage              = true
+}
+
+
+resource "azurerm_role_assignment" "service_bus_queue_role" {
+    scope                = azurerm_servicebus_namespace.servicebus_namespace.id
+  role_definition_name = "Azure Service Bus Data Receiver"
+  principal_id         = azurerm_user_assigned_identity.user_assigned_identity.principal_id
+}
+
