@@ -8,7 +8,7 @@ from azure.servicebus import ServiceBusClient
 fully_qualified_namespace = os.getenv('AZURE_SERVICEBUS_NAME_SPACE') + '.servicebus.windows.net'
 queue_name = os.getenv('AZURE_SERVICEBUS_QUEUE_NAME')
 
-client_id = os.getenv('AZURE_AZURE_CLIENT_ID')
+client_id = os.getenv('AZURE_CLIENT_ID')
 
 # Authentification avec l'identité assignée
 credential = DefaultAzureCredential(managed_identity_client_id=client_id)

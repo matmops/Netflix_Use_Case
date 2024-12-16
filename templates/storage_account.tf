@@ -56,7 +56,7 @@ resource "azurerm_eventgrid_event_subscription" "event_subscription_queue" {
 
 resource "azurerm_role_assignment" "read_raw_container" {
   principal_id        = azurerm_user_assigned_identity.user_assigned_identity.principal_id
-  role_definition_name = "Storage Blob Data Reader"
+  role_definition_name = "Storage Blob Data Contributor"
   scope               = azurerm_storage_container.container_raw.resource_manager_id
 }
 
@@ -69,6 +69,12 @@ resource "azurerm_role_assignment" "write_final_container" {
 resource "azurerm_role_assignment" "queue_role" {
   scope                = azurerm_storage_queue.my_queue_for_the_aca_app.resource_manager_id
   role_definition_name = "Storage Queue Data Contributor"
+  principal_id         = azurerm_user_assigned_identity.user_assigned_identity.principal_id
+}
+
+resource "azurerm_role_assignment" "service_bus_queue_role" {
+    scope                = azurerm_servicebus_namespace.servicebus_namespace.id
+  role_definition_name = "Azure Service Bus Data Receiver"
   principal_id         = azurerm_user_assigned_identity.user_assigned_identity.principal_id
 }
 

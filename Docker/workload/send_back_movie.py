@@ -20,7 +20,7 @@ if check_status == "DONE":
     blob_name = '/'.join(blob_url_parts[4:])
     file_name = os.path.basename(blob_name)
 
-    client_id = os.getenv('AZURE_AZURE_CLIENT_ID')
+    client_id = os.getenv('AZURE_CLIENT_ID')
 
 
     account_name = client_id = os.getenv('AZURE_BLOB_WRITE')

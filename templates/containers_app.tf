@@ -62,7 +62,7 @@ resource "azurerm_container_app" "aca_netflix_use_case" {
       }
         env {
         name  = "AZURE_SERVICEBUS_NAME_SPACE"
-        value = azurerm_servicebus_queue.servicebus_queue.name
+        value = azurerm_servicebus_namespace.servicebus_namespace.name
       }
 
         env {

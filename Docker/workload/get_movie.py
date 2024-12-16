@@ -14,7 +14,7 @@ account_name = blob_url_parts[2].split('.')[0]
 container_name = blob_url_parts[3]
 blob_name = '/'.join(blob_url_parts[4:])
 
-client_id = os.getenv('AZURE_AZURE_CLIENT_ID')
+client_id = os.getenv('AZURE_CLIENT_ID')
 
 # Authentification avec l'identité assignée
 credential = DefaultAzureCredential(managed_identity_client_id=client_id)

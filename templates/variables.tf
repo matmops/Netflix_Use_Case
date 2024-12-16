@@ -13,10 +13,6 @@ variable "event_grid_topic_name" {
   default = "UploadEvent"
 }
 
-variable "service_bus_namespace_name" {
-  type    = string
-  default = "NetflixsalahServiceBusNamespace"
-}
 
 variable "service_bus_queue_name" {
   type    = string
