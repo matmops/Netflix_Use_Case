@@ -54,7 +54,7 @@ custom_scale_rule{
     
     container {
       name   = "my-job-to-process-netflix"
-      image  = "ghcr.io/matmops/netflix_use_case_2:latest"
+      image  = "ghcr.io/matmops/netflix_use_case:latest"
       cpu    = 1
       memory = "2Gi"
 

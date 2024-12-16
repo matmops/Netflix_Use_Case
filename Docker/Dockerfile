@@ -15,5 +15,5 @@ RUN apt-get update && \
 COPY . /app
 
 # Commande par défaut pour garder le conteneur en cours d'exécution
-CMD ["tail", "-f", "/dev/null"]
+CMD ["python", "get_files.py", "get_movie.py", "process_movie.py", "check_movie.py", "send_back_movie.py"]
 
