@@ -70,13 +70,15 @@ resource "null_resource" "update_scale_rule" {
       az containerapp update  --name ${azurerm_container_app.aca_netflix_use_case.name} --resource-group ${azurerm_resource_group.resource_group.name}  --scale-rule-name go-ahead --scale-rule-type azure-queue  --scale-rule-metadata accountName=${azurerm_storage_account.storageaccount.name} queueName=${azurerm_storage_queue.my_queue_for_the_aca_app.name} queueLength=1 --scale-rule-auth triggerParameter=connection secretRef=queue-connection-string  --scale-rule-identity ${azurerm_user_assigned_identity.user_assigned_identity.id}
     EOT
   }
-}
 
-/* 
- resource "null_resource" "assign_role" {
-  provisioner "local-exec" {
-    command = <<EOT
-      az role assignment create --assignee-object-id  ${azurerm_user_assigned_identity.user_assigned_identity.id} --assignee-principal-type ServicePrincipal --role "Storage Queue Data Contributor" --scope ${azurerm_storage_queue.my_queue_for_the_aca_app.id}
-      EOT
-  }
-} */
+    depends_on = [
+    azurerm_container_app.aca_netflix_use_case,
+    azurerm_storage_account.storageaccount,
+    azurerm_storage_queue.my_queue_for_the_aca_app,
+    azurerm_user_assigned_identity.user_assigned_identity,
+    azurerm_servicebus_queue.servicebus_queue,
+    azurerm_eventgrid_event_subscription.event_subscription_servicebus,
+    azurerm_role_assignment.queue_role,
+    
+  ]
+}

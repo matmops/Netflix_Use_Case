@@ -15,7 +15,7 @@ variable "event_grid_topic_name" {
 
 variable "service_bus_namespace_name" {
   type    = string
-  default = "NetflixServiceBusNamespace"
+  default = "NetflixsalahServiceBusNamespace"
 }
 
 variable "service_bus_queue_name" {

@@ -66,6 +66,12 @@ resource "azurerm_role_assignment" "write_final_container" {
   scope               = azurerm_storage_container.container_final.resource_manager_id
 }
 
+resource "azurerm_role_assignment" "queue_role" {
+  scope                = azurerm_storage_queue.my_queue_for_the_aca_app.resource_manager_id
+  role_definition_name = "Storage Queue Data Contributor"
+  principal_id         = azurerm_user_assigned_identity.user_assigned_identity.principal_id
+}
+
 resource "azurerm_storage_queue" "my_queue_for_the_aca_app" {
   name                 = "aca-app-trigger"
   storage_account_name = azurerm_storage_account.storageaccount.name
