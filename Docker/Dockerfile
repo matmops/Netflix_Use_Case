@@ -2,7 +2,7 @@
 FROM python:3.9-slim
 
 # Définir le répertoire de travail
-WORKDIR /app
+WORKDIR /app/workload
 
 # Installer Azure CLI et la bibliothèque azure-identity
 RUN apt-get update && \
