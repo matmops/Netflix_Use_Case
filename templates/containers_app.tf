@@ -54,7 +54,7 @@ custom_scale_rule{
     
     container {
       name   = "my-job-to-process-netflix"
-      image  = "ghcr.io/matmops/netflix_use_case:latest"
+      image  = "ghcr.io/matmops/netflix_use_case_2:latest"
       cpu    = 1
       memory = "2Gi"
 
@@ -74,8 +74,12 @@ custom_scale_rule{
       }
 
         env {
-        name  = "AZURE_STORAGE_ACCOUNT_NAME"
-        value = azurerm_storage_account.storageaccount.name
+        name  = "AZURE_STORAGE_ACCOUNT_NAME_RAW"
+        value = azurerm_storage_account.storageaccount_raw.name
+      }
+              env {
+        name  = "AZURE_STORAGE_ACCOUNT_NAME_FINAL"
+        value = azurerm_storage_account.storageaccount_final.name
       }
 
               env {

@@ -24,12 +24,12 @@ if check_status == "DONE":
 
 # Authentification avec l'identité assignée
     credential = DefaultAzureCredential(managed_identity_client_id=client_id)
-    blob_service_client = BlobServiceClient(account_url=f"https://{account_name}.blob.core.windows.net", credential=credential)
-    
+    blob_service_client_raw = BlobServiceClient(account_url=f"https://{os.getenv('AZURE_STORAGE_ACCOUNT_NAME_RAW')}.blob.core.windows.net", credential=credential)
+    blob_service_client_final = BlobServiceClient(account_url=f"https://{os.getenv('AZURE_STORAGE_ACCOUNT_NAME_FINAL')}.blob.core.windows.net", credential=credential)
 
     # Récupérer le client du conteneur et du blob pour lecture et écriture
-    container_client_read = blob_service_client.get_container_client(os.getenv('AZURE_BLOB_READ'))
-    container_client_write = blob_service_client.get_container_client(os.getenv('AZURE_BLOB_WRITE'))
+    container_client_read = blob_service_client_raw.get_container_client(os.getenv('AZURE_BLOB_READ'))
+    container_client_write = blob_service_client_final.get_container_client(os.getenv('AZURE_BLOB_WRITE'))
 
     original_blob_client = container_client_read.get_blob_client(blob_name)
     converted_blob_client = container_client_write.get_blob_client(f"{os.path.splitext(blob_name)[0]}.mp4")

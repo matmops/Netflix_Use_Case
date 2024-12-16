@@ -9,6 +9,13 @@ resource "azurerm_servicebus_queue" "servicebus_queue" {
   name         = var.service_bus_queue_name
   namespace_id = azurerm_servicebus_namespace.servicebus_namespace.id
 }
+
+resource "azurerm_servicebus_queue" "servicebus_queue_log" {
+  name         = "${var.service_bus_queue_name}_log"
+  namespace_id = azurerm_servicebus_namespace.servicebus_namespace.id
+}
+
+
 resource "azurerm_servicebus_namespace_authorization_rule" "queue_listener" {
   name                = "listener-policy"
   namespace_id     = azurerm_servicebus_namespace.servicebus_namespace.id
