@@ -33,26 +33,7 @@ resource "azurerm_container_app" "aca_netflix_use_case" {
 
       min_replicas = 0
       max_replicas = 20
-
-
-
-    custom_scale_rule {
-      custom_rule_type = "azure-queue"
-        name         = "queue-scaling-rule"
- 
-
-        metadata = {
-          accountName = azurerm_storage_account.storageaccount.name
-          queueName   = azurerm_storage_queue.my_queue_for_the_aca_app.name
-          queueLength = "1"
-          connectionFromEnv = "queue-connection-string"
-        }
-
-        authentication {
-          secret_name = "queue-connection-string"
-          trigger_parameter = "connection"
-        }
-      } 
+      
     container {
       name   = "my-job-to-process-netflix"
       image  = "ghcr.io/matmops/netflix_use_case:latest"
@@ -70,7 +51,7 @@ resource "azurerm_container_app" "aca_netflix_use_case" {
       
       env {
         name  = "AZURE_STORAGE_CONNECTION_STRING"
-        value = "secretref:queue-connection-string"
+        value = "DefaultEndpointsProtocol=https;AccountName=${azurerm_storage_account.storageaccount.name};AccountKey=${azurerm_storage_account.storageaccount.primary_access_key};EndpointSuffix=core.windows.net"
       }
 
 
@@ -80,9 +61,22 @@ resource "azurerm_container_app" "aca_netflix_use_case" {
     
     }
   }
- resource "azurerm_role_assignment" "queue_role_assignment" {
-  principal_id         = azurerm_user_assigned_identity.user_assigned_identity.client_id
-  role_definition_name = "Storage Queue Data Contributor"
-  scope                = azurerm_storage_queue.my_queue_for_the_aca_app.resource_manager_id
+
+
+resource "null_resource" "update_scale_rule" {
+  provisioner "local-exec" {
+    command = <<EOT
+      az extension add --name containerapp --upgrade
+      az containerapp update  --name ${azurerm_container_app.aca_netflix_use_case.name} --resource-group ${azurerm_resource_group.resource_group.name}  --scale-rule-name go-ahead --scale-rule-type azure-queue  --scale-rule-metadata accountName=${azurerm_storage_account.storageaccount.name} queueName=${azurerm_storage_queue.my_queue_for_the_aca_app.name} queueLength=1 --scale-rule-auth triggerParameter=connection secretRef=queue-connection-string  --scale-rule-identity ${azurerm_user_assigned_identity.user_assigned_identity.id}
+    EOT
+  }
 }
- 
+
+/* 
+ resource "null_resource" "assign_role" {
+  provisioner "local-exec" {
+    command = <<EOT
+      az role assignment create --assignee-object-id  ${azurerm_user_assigned_identity.user_assigned_identity.id} --assignee-principal-type ServicePrincipal --role "Storage Queue Data Contributor" --scope ${azurerm_storage_queue.my_queue_for_the_aca_app.id}
+      EOT
+  }
+} */
