@@ -15,40 +15,47 @@ message_id = config.get('INFO', 'Message ID')
 if check_status == "DONE":
     # Extraire les informations nécessaires de l'URL
     blob_url_parts = url.split('/')
-    account_name = blob_url_parts[2].split('.')[0]
+    account_name_read = blob_url_parts[2].split('.')[0]
     container_name = blob_url_parts[3]
     blob_name = '/'.join(blob_url_parts[4:])
     file_name = os.path.basename(blob_name)
 
-    client_id = os.getenv('AZURE_CLIENT_ID')
+    # Configuration des comptes Blob Storage
+    client_id_write = os.getenv('AZURE_BLOB_WRITE')
+    client_id_read = os.getenv('AZURE_BLOB_READ')
 
+    # Authentification avec l'identité assignée
+    credential_write = DefaultAzureCredential(managed_identity_client_id=client_id_write)
+    credential_read = DefaultAzureCredential(managed_identity_client_id=client_id_read)
 
-    account_name = client_id = os.getenv('AZURE_BLOB_WRITE')
+    # Clients Blob Service
+    blob_service_client_write = BlobServiceClient(account_url=f"https://{client_id_write}.blob.core.windows.net", credential=credential_write)
+    blob_service_client_read = BlobServiceClient(account_url=f"https://{client_id_read}.blob.core.windows.net", credential=credential_read)
 
-# Authentification avec l'identité assignée
-    credential = DefaultAzureCredential(managed_identity_client_id=client_id)
-    blob_service_client = BlobServiceClient(account_url=f"https://{account_name}.blob.core.windows.net", credential=credential)
+    # Récupérer le client du conteneur et du blob pour lecture et écriture
+    container_client_read = blob_service_client_read.get_container_client(container_name)
+    container_client_write = blob_service_client_write.get_container_client(container_name)
 
-    # Récupérer le client du conteneur et du blob
-    container_client = blob_service_client.get_container_client(container_name)
-    original_blob_client = container_client.get_blob_client(blob_name)
-    converted_blob_client = container_client.get_blob_client(f"{os.path.splitext(blob_name)[0]}.mp4")
+    original_blob_client = container_client_read.get_blob_client(blob_name)
+    converted_blob_client = container_client_write.get_blob_client(f"{os.path.splitext(blob_name)[0]}.mp4")
 
     # Chemin du fichier converti
     converted_file_path = os.path.expanduser(f"~/final/{os.path.splitext(file_name)[0]}.mp4")
 
-    # Télécharger le fichier converti dans le blob
+    # Télécharger le fichier converti dans le blob d'écriture
     with open(converted_file_path, "rb") as data:
         converted_blob_client.upload_blob(data, overwrite=True)
-        print(f"Fichier {converted_file_path} téléchargé dans le blob.")
+        print(f"Fichier {converted_file_path} téléchargé dans le blob d'écriture.")
 
-    # Supprimer le fichier initial .avi du blob
+    # Supprimer le fichier initial .avi du blob de lecture
     original_blob_client.delete_blob()
-    print(f"Fichier {blob_name} supprimé du blob.")
+    print(f"Fichier {blob_name} supprimé du blob de lecture.")
 
+    # Gestion de la file d'attente Service Bus
     fully_qualified_namespace = os.getenv('AZURE_SERVICEBUS_NAME_SPACE') + '.servicebus.windows.net'
     queue_name = os.getenv('AZURE_SERVICEBUS_QUEUE_NAME')
-    servicebus_client = ServiceBusClient(fully_qualified_namespace=fully_qualified_namespace, credential=credential, logging_enable=True)
+    servicebus_client = ServiceBusClient(fully_qualified_namespace=fully_qualified_namespace, credential=credential_write, logging_enable=True)
+
     receiver = servicebus_client.get_queue_receiver(queue_name=queue_name, max_wait_time=5)
     with receiver:
         # Recevoir les messages différés
