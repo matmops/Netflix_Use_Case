@@ -1,28 +1,33 @@
 import os
 import subprocess
 import configparser
+import logging
 
-# Lire l'URL depuis le fichier info.ini pour obtenir le nom du fichier
+# Logging configuration
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
+# Read info.ini
 config = configparser.ConfigParser()
 config.read('info.ini')
 url = config.get('INFO', 'URL')
 
-# Extraire le nom du fichier depuis l'URL
+# Extract file name
 file_name = url.split('/')[-1]
-
-# Chemin du fichier téléchargé
 download_file_path = os.path.expanduser(f"~/file_to_process/{file_name}")
 
-# Vérifier si le fichier existe
+# Verify file existence
 if not os.path.exists(download_file_path):
-    print(f"Le fichier {download_file_path} n'existe pas.")
-else:
-    # Convertir le fichier en format MP4
-    output_folder = os.path.expanduser("~/final")
-    os.makedirs(output_folder, exist_ok=True)
-    output_file_path = os.path.join(output_folder, f"{os.path.splitext(file_name)[0]}.mp4")
+    logging.error(f"File {download_file_path} does not exist.")
+    exit(1)
 
-    # Utiliser ffmpeg pour convertir le fichier
-    subprocess.run(["ffmpeg", "-i", download_file_path, output_file_path])
+# Convert the file using ffmpeg
+output_folder = os.path.expanduser("~/final")
+os.makedirs(output_folder, exist_ok=True)
+output_file_path = os.path.join(output_folder, f"{os.path.splitext(file_name)[0]}.mp4")
 
-    print(f"Fichier converti et stocké dans {output_file_path}")
+try:
+    subprocess.run(["ffmpeg", "-i", download_file_path, output_file_path], check=True)
+    logging.info(f"File converted successfully to {output_file_path}")
+except subprocess.CalledProcessError as e:
+    logging.error(f"Error during ffmpeg processing: {e}")
+    exit(1)

@@ -20,4 +20,4 @@ if __name__ == "__main__":
         run_script(script)
 
     # Keep the container running for a maximum of 5 minutes
-    time.sleep(300)
+    time.sleep(60)
