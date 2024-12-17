@@ -1,11 +1,14 @@
 import subprocess
 import time
+import sys
 
 def run_script(script_name):
     try:
         subprocess.run(["python", script_name], check=True)
+        print(f"Script {script_name} ran successfully.")
     except subprocess.CalledProcessError as e:
         print(f"Error occurred while running {script_name}: {e}")
+        sys.exit(1)  # Exit the entire process with an error code
 
 if __name__ == "__main__":
     scripts = [
@@ -19,5 +22,8 @@ if __name__ == "__main__":
     for script in scripts:
         run_script(script)
 
-    # Keep the container running for a maximum of 5 minutes
+    # If all scripts ran successfully, this will be executed
+    print("All scripts completed successfully.")
+
+    # Keep the container running for a maximum of 60 seconds (1 minute)
     time.sleep(60)
