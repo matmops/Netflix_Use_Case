@@ -10,10 +10,8 @@ RUN apt-get update && \
   curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
   pip install azure-identity azure-storage-blob azure-servicebus
 
-
 # Copier le contenu local dans le conteneur
 COPY . /app
 
 # Commande par défaut pour garder le conteneur en cours d'exécution
-CMD sh -c "python get_files.py && python get_movie.py && python process_movie.py && python check_movie.py && python send_back_movie.py"
-
+CMD ["python", "run_all.py"]
