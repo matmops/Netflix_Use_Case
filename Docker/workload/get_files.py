@@ -5,6 +5,7 @@ import sys
 import logging
 from azure.identity import DefaultAzureCredential
 from azure.servicebus import ServiceBusClient
+from log_message import send_log_to_queue, log_message
 
 # Logging configuration
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -35,7 +36,8 @@ def process_message_with_lock_renewal():
                     message_json = json.loads(message_body)
                     url = message_json.get("data", {}).get("url")
                     message_id = message.message_id
-
+                    log_message["file_url"] = url
+                    log_message["message_id"] = message_id
                     # Store message details in info.ini
                     config = configparser.ConfigParser()
                     config['INFO'] = {'URL': url, 'Message ID': message_id}

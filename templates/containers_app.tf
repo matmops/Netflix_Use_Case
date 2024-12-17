@@ -72,6 +72,11 @@ custom_scale_rule{
         name  = "AZURE_SERVICEBUS_QUEUE_NAME"
         value = azurerm_servicebus_queue.servicebus_queue.name
       }
+        env {
+        name  = "AZURE_SERVICEBUS_QUEUE_NAME_LOG"
+        value = azurerm_servicebus_queue.servicebus_queue_log.name
+      }
+
 
         env {
         name  = "AZURE_STORAGE_ACCOUNT_NAME_RAW"
