@@ -19,6 +19,5 @@ if __name__ == "__main__":
     for script in scripts:
         run_script(script)
 
-    # Keep the container running indefinitely
-    while True:
-        time.sleep(3600)
+    # Keep the container running for a maximum of 5 minutes
+    time.sleep(300)
