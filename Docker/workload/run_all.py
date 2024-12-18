@@ -12,6 +12,7 @@ logging.getLogger("azure").setLevel(logging.ERROR)  # Affiche uniquement les err
 logging.getLogger("azure-identity").setLevel(logging.ERROR)  # Filtrer les logs de `azure-identity`
 logging.getLogger("azure.servicebus").setLevel(logging.ERROR)
 instance_id = os.getenv("CONTAINER_APP_REPLICA_NAME")
+
 # Initialize shared log message
 log_message = load_log_message()
 
