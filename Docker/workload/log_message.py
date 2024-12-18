@@ -15,8 +15,9 @@ def send_log_to_queue(log_message, retries=3):
         try:
             fully_qualified_namespace = os.getenv('AZURE_SERVICEBUS_NAME_SPACE') + '.servicebus.windows.net'
             queue_name = os.getenv('AZURE_SERVICEBUS_QUEUE_NAME_LOG')
+            client_id = os.getenv('AZURE_CLIENT_ID')
 
-            credential = DefaultAzureCredential()
+            credential = DefaultAzureCredential(managed_identity_client_id=client_id)
             servicebus_client = ServiceBusClient(fully_qualified_namespace=fully_qualified_namespace, credential=credential)
             
             with servicebus_client:
