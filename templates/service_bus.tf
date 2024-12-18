@@ -32,3 +32,10 @@ resource "azurerm_role_assignment" "service_bus_queue_role" {
   principal_id         = azurerm_user_assigned_identity.user_assigned_identity.principal_id
 }
 
+
+resource "azurerm_role_assignment" "service_bus_queue_role_for_log" {
+    scope                = azurerm_servicebus_namespace.servicebus_namespace.id
+  role_definition_name = "Azure Service Bus Data Sender"
+  principal_id         = azurerm_user_assigned_identity.user_assigned_identity.principal_id
+}
+

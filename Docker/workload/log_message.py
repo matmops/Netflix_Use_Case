@@ -9,6 +9,21 @@ from datetime import datetime
 # Logging configuration
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
+log_file_path = "log_message.json"  # Chemin du fichier de log
+
+# Charger le log depuis le fichier JSON
+def load_log_message():
+    if os.path.exists(log_file_path):
+        with open(log_file_path, "r") as f:
+            return json.load(f)
+    else:
+        return None  # Si le fichier n'existe pas encore, retourner None
+
+# Sauvegarder le log dans le fichier JSON
+def save_log_message(log_message):
+    with open(log_file_path, "w") as f:
+        json.dump(log_message, f, indent=4)
+
 # Send log message to Service Bus queue
 def send_log_to_queue(log_message, retries=3):
     for attempt in range(retries):
