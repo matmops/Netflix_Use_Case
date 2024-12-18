@@ -8,11 +8,10 @@ from log_message import create_base_log, save_log_message, load_log_message, sen
 
 # Logging configuration
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logging.getLogger("azure").setLevel(logging.ERROR)  # Affiche uniquement les erreurs pour Azure SDK
 logging.getLogger("azure-identity").setLevel(logging.ERROR)  # Filtrer les logs de `azure-identity`
 logging.getLogger("azure.servicebus").setLevel(logging.ERROR)
-instance_id = os.getenv("AZURE_APP_INSTANCE_ID")
+instance_id = os.getenv("CONTAINER_APP_REPLICA_NAME")
 # Initialize shared log message
 log_message = load_log_message()
 
