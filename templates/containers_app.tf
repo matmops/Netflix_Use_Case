@@ -29,8 +29,6 @@ resource "azurerm_container_app" "aca_netflix_use_case" {
     identity_ids = [azurerm_user_assigned_identity.user_assigned_identity.id]
   }
 
-  
-
   template {
 
       min_replicas = 0

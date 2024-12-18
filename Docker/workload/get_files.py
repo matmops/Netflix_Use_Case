@@ -3,8 +3,9 @@ import os
 import configparser
 import sys
 import logging
+import time
 from azure.identity import DefaultAzureCredential
-from azure.servicebus import ServiceBusClient
+from azure.servicebus import ServiceBusClient, ServiceBusMessage
 from log_message import load_log_message, save_log_message, create_base_log
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -12,13 +13,17 @@ logging.getLogger("azure").setLevel(logging.ERROR)  # Affiche uniquement les err
 logging.getLogger("azure-identity").setLevel(logging.ERROR)  # Filtrer les logs de `azure-identity`
 logging.getLogger("azure.servicebus").setLevel(logging.ERROR)
 instance_id = os.getenv("CONTAINER_APP_REPLICA_NAME")
-
+# Environment Variables
 fully_qualified_namespace = os.getenv('AZURE_SERVICEBUS_NAME_SPACE') + '.servicebus.windows.net'
 queue_name = os.getenv('AZURE_SERVICEBUS_QUEUE_NAME')
-
+dlq_name = f"{queue_name}/$DeadLetterQueue"
 client_id = os.getenv('AZURE_CLIENT_ID')
 
 # Authentication with managed identity
+# Constants
+MAX_RETRIES = 5  # Max retries before sending to DLQ
+
+# Authentication
 credential = DefaultAzureCredential(managed_identity_client_id=client_id)
 servicebus_client = ServiceBusClient(fully_qualified_namespace=fully_qualified_namespace, credential=credential)
 

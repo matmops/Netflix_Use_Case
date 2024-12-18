@@ -1,0 +1,20 @@
+{
+  "bindings": [
+    {
+      "name": "msg",
+      "type": "serviceBusTrigger",
+      "direction": "in",
+      "queueName": "netflixbusqueue",
+      "connection": "AzureWebJobs.ServiceBusConnectionString"
+    },
+    {
+      "name": "msg",
+      "type": "serviceBusTrigger",
+      "direction": "in",
+      "queueName": "netflixbusqueue/$DeadLetterQueue",
+      "connection": "AzureWebJobs.ServiceBusConnectionString"
+    }
+  ],
+  "scriptFile": "__init__.py",
+  "entryPoint": "main"
+}
