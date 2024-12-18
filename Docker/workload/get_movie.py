@@ -5,8 +5,10 @@ from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
 from azure.servicebus import ServiceBusClient
 
-# Logging configuration
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.getLogger("azure").setLevel(logging.ERROR)  # Affiche uniquement les erreurs pour Azure SDK
+logging.getLogger("azure-identity").setLevel(logging.ERROR)  # Filtrer les logs de `azure-identity`
+logging.getLogger("azure.servicebus").setLevel(logging.ERROR)
 
 # Read info.ini
 config = configparser.ConfigParser()

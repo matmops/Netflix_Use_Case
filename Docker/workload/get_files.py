@@ -7,8 +7,10 @@ from azure.identity import DefaultAzureCredential
 from azure.servicebus import ServiceBusClient
 from log_message import load_log_message, save_log_message
 
-# Logging configuration
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.getLogger("azure").setLevel(logging.ERROR)  # Affiche uniquement les erreurs pour Azure SDK
+logging.getLogger("azure-identity").setLevel(logging.ERROR)  # Filtrer les logs de `azure-identity`
+logging.getLogger("azure.servicebus").setLevel(logging.ERROR)
 
 fully_qualified_namespace = os.getenv('AZURE_SERVICEBUS_NAME_SPACE') + '.servicebus.windows.net'
 queue_name = os.getenv('AZURE_SERVICEBUS_QUEUE_NAME')
