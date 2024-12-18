@@ -5,12 +5,13 @@ import sys
 import logging
 from azure.identity import DefaultAzureCredential
 from azure.servicebus import ServiceBusClient
-from log_message import load_log_message, save_log_message
+from log_message import load_log_message, save_log_message, create_base_log
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logging.getLogger("azure").setLevel(logging.ERROR)  # Affiche uniquement les erreurs pour Azure SDK
 logging.getLogger("azure-identity").setLevel(logging.ERROR)  # Filtrer les logs de `azure-identity`
 logging.getLogger("azure.servicebus").setLevel(logging.ERROR)
+instance_id = os.getenv("CONTAINER_APP_REPLICA_NAME")
 
 fully_qualified_namespace = os.getenv('AZURE_SERVICEBUS_NAME_SPACE') + '.servicebus.windows.net'
 queue_name = os.getenv('AZURE_SERVICEBUS_QUEUE_NAME')
@@ -23,6 +24,11 @@ servicebus_client = ServiceBusClient(fully_qualified_namespace=fully_qualified_n
 
 # Charger log_message depuis le fichier JSON
 log_message = load_log_message()
+
+# Vérifier que log_message est un dictionnaire
+if log_message is None:
+    logging.error("Log message is None. Exiting.")
+    log_message = create_base_log(job_id=instance_id, message_id="run_all_12345")
 
 def process_message_with_lock_renewal():
     with servicebus_client:
@@ -39,7 +45,12 @@ def process_message_with_lock_renewal():
                     # Extract message content
                     message_body = str(message)
                     message_json = json.loads(message_body)
-                    url = message_json.get("data", {}).get("url")
+                    data = message_json.get("data")
+                    if data is None:
+                        logging.error(f"Missing 'data' in message: {message_body}")
+                        continue
+
+                    url = data.get("url")
                     message_id = message.message_id
                     log_message["file_url"] = url
                     log_message["message_id"] = message_id
